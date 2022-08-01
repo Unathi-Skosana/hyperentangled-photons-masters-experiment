@@ -9,8 +9,7 @@ hyperentangled states (See chapter 5 from my thesis for more details, [here](htt
 
 <br/>
 
-For an experiment of that kind, manually performing measurements, by turning the various dials on the components (_i.e._ Half/Quarter wave plates, etc.) during an experiment, can be a bit tedious and not kind to human error (A Mach-Zach interferometer can stop working because you sneezed near it). Some optical components can be interfaced with a motor, from which you can do the dial-turning. Unfortunately, this can still be error-prone. Luckily, ThorLabs motors have a low level communication [protocol](https://www.thorlabs.com/software/apt/APT_Communications_Protocol_Rev_15.pdf), and a functional implementation of this protocol in python exists [thorlabs-apt-protocol](https://github.com/yaq-project/thorlabs-apt-protocol). The latter is straight forward to use:
-
+For an experiment of that kind, manually performing measurements, by turning the various dials on the components (_i.e._ Half/Quarter wave plates, etc.) during an experiment, can be a bit tedious and not kind to human error (A Mach-Zach interferometer can stop working because you sneezed near it). Some optical components can be interfaced with a motor, from which you can do the dial-turning. Unfortunately, this can still be a bit error-prone. Luckily, ThorLabs motors have a low level communication [protocol](https://www.thorlabs.com/software/apt/APT_Communications_Protocol_Rev_15.pdf), and a functional implementation of this protocol in python exists [thorlabs-apt-protocol](https://github.com/yaq-project/thorlabs-apt-protocol). The latter is straight forward to use:
 
  ```python
 import thorlabs_apt_protocol as apt
@@ -35,17 +34,10 @@ z_t_stage.write(
 ```
 The above code snippet grabs the translation stage connected to `ttyUSB0`, and
 tells it to move to position `PROJ_ONE_POS`, which moves the beam blocks in the
-experiment to block one of the paths in the Mach-Zehnder interferometer (see experiment schematic), which effectively performing projective z-basis measurement on the hyperentangled photonic state. With this, I wrote modularize code that allows one to specify other measurement procedures (Y, X basis measurements etc) relavant to my experiment. This [modularized code](https://github.com/Unathi-Skosana/remote-kdc-101/blob/main/server/src/app.py) is served by a [Flask](https://flask.palletsprojects.com/en/2.1.x/) application running on a Raspiberry Pi, on which the connected are motors.
+experiment to block one of the paths in the Mach-Zehnder interferometer (see experiment schematic), which effectively performs a projective z-basis measurement on the hyperentangled photonic state. With this, I wrote modularize code that allowed one to specify other measurement procedures (Y, X basis measurements etc) that were relavant to my experiment. This [modularized code](https://github.com/Unathi-Skosana/remote-kdc-101/blob/main/server/src/app.py) is served by a [Flask](https://flask.palletsprojects.com/en/2.1.x/) application running on a Raspiberry Pi, on which the motors are connected.
 
-Next, we need to collect the results of measurements described above. Single
-photon detectors collect photons from the experiment and output to a counter
-module that counts how many photons are detected, and also how many are
-coincident with each other or detected simultaneously within some time window
-(correlated photons); this module is often called a coincidence counting module
-(You can see it's description [here](https://doi.org/10.1119/1.3116803)). It's
-core component is a field-programming gate array (FPGA), which in experiemnt is
-also connected to the same Raspiberry as the motors. We can similarly read the
-output of a FPGA from a USB port:
+Next, we need to collect the results of the measurements described above. The single
+photon detectors in the schematic, collect photons from the experiment and output to a counter module that counts how many photons are detected, and also how many are coincident with each other or detected simultaneously within some time window (correlated photons); this module is often called a coincidence counting module (You can see it's description [here](https://doi.org/10.1119/1.3116803)). It's core component is a field-programming gate array (FPGA), which in the experiemnt is also connected to the same Raspiberry Pi as the motors. Similarly, we can read the output from FPGA connected through a USB port to Raspberry Pi:
 
 ```python
 import serial
@@ -80,11 +72,11 @@ with serial.Serial('/dev/ttyUSB0', 19200, timeout=1, stopbits=serial.STOPBITS_ON
         print(accum)
 ```
 
-The variable `accum`  accumulates single counts (counts from each detector), double counts
-(coincidence counts from two detectors) and so on, as the results of the measurements. The snippet above is invoked at the end of each special moves in the Flask server, and the server responds to the requester that invoked the special move with the counts gathered from that particular move.
+The variable `accum` accumulates single counts (counts from each detector), double counts
+(coincidence counts from two detectors) and so on, as the results of the measurements. The snippet above is invoked at the end of each special move in the Flask server, and the server responds to the requester with counts gathered from that particular move.
 
 Lastly, instead of having to directly invoke the API served by Flask, I made a tiny
-react-native mobile graphical user interface that consumes the said API, and leaves the user to just pressing buttons on a mobile to specify any measurement procedure and get its results:
+react-native mobile graphical user interface that consumes the said API, and leaves the user to just pressing buttons on a mobile screen to specify any measurement procedure and get its results:
 
 <div>
   <img style="border: 0.1rem solid;" width="45%" height="100%" alt="Dashboard" src="./assets/dashboard1.jpg" />
@@ -95,7 +87,7 @@ react-native mobile graphical user interface that consumes the said API, and lea
 
 <br />
 
-Furthermore, I extended the API, to allow the GUI change some of the settings on the motors such as home positioning, velocity, jogging step size, etc:
+Furthermore, I extended the API, to allow the GUI to change some of the settings on the motors such as home positioning, velocity, jogging step size, etc:
 
 <div>
   <img style="border: 0.1rem solid;" width="45%" height="100%" alt="Schematic of flowchart" src="./assets/parameters.jpg" />
@@ -106,18 +98,10 @@ Furthermore, I extended the API, to allow the GUI change some of the settings on
 
 <br/>
 
-On boot, the Raspberry Pi creates a tunnel URL for the Flask server running locally, and through the tunnel URL the mobile GUI can access API. The entire work flow described thus far can be schematically represented as such:
+On boot, the Raspberry Pi creates a tunnel URL for the Flask server running locally, through the tunnel URL the GUI can access the said API. The entire work flow described thus far can be schematically represented as:
 
 <div>
   <img width="100%" height="100%" alt="Schematic of flowchart" src="./assets/flowchart.svg" />
-</div>
-
-<br/>
-
-and the final real-life experimental setup looked like this (could have done a better cable job):
-
-<div>
-  <img width="100%" height="100%" alt="Schematic of flowchart" src="./assets/real_setup.jpg" />
 </div>
 
 ## Credits
