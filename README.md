@@ -1,6 +1,6 @@
 # Control code for my experimental setup realizing a hyperentangled photonic state.
 
-During my Masters education, I built a photonic experimement realizing a three-photon
+During my masters degree, I built a photonic experiment realizing a three-photon
 hyperentangled states (See chapter 5 from my thesis for more details, [here](https://scholar.sun.ac.za/bitstream/handle/10019.1/124708/skosana_quantum_2022.pdf?sequence=1)). Schematically, it looks something like this.
 
 <div>
@@ -9,7 +9,7 @@ hyperentangled states (See chapter 5 from my thesis for more details, [here](htt
 
 <br/>
 
-For an experiment of that kind, manually performing measurements, by turning the various dials on the components (_i.e._ Half/Quarter wave plates, etc.) during an experiment, can be a bit tedious and not kind to human error (A Mach-Zach interferometer can stop working because you sneezed near it). Some optical components can be interfaced with a motor, from which you can do the dial-turning. Unfortunately, this can still be a bit error-prone. Luckily, ThorLabs motors have a low level communication [protocol](https://www.thorlabs.com/software/apt/APT_Communications_Protocol_Rev_15.pdf), and a functional implementation of this protocol in python exists [thorlabs-apt-protocol](https://github.com/yaq-project/thorlabs-apt-protocol). The latter is straight forward to use:
+For an experiment of that kind, manually performing measurements, by turning the various dials on the components (_i.e._ Half/Quarter wave plates, etc.) during an experiment, can be a bit tedious and prone to human error (A Mach-Zach interferometer can stop working because you sneezed near it). Some optical components can be interfaced with a motor, from which you can do the dial-turning. Unfortunately, this can still be a bit error-prone. Luckily, ThorLabs motors have a low level communication [protocol](https://www.thorlabs.com/software/apt/APT_Communications_Protocol_Rev_15.pdf), and a functional implementation of this protocol in python exists [thorlabs-apt-protocol](https://github.com/yaq-project/thorlabs-apt-protocol). The latter is straight forward to use:
 
  ```python
 import thorlabs_apt_protocol as apt
